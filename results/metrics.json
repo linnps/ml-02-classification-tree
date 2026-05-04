@@ -1,0 +1,34 @@
+{
+  "config": {
+    "n_samples": 1500,
+    "cluster_std": 0.55,
+    "n_noise_features": 2,
+    "seed": 42
+  },
+  "metrics": [
+    {
+      "model": "Logistic Reg.",
+      "accuracy": 0.4613333333333333,
+      "f1": 0.46842105263157896,
+      "roc_auc": 0.4524405506883605
+    },
+    {
+      "model": "Decision Tree",
+      "accuracy": 0.8693333333333333,
+      "f1": 0.8545994065281899,
+      "roc_auc": 0.9660513141426783
+    },
+    {
+      "model": "Random Forest",
+      "accuracy": 0.9813333333333333,
+      "f1": 0.9813333333333333,
+      "roc_auc": 0.9967857549209239
+    },
+    {
+      "model": "Gradient Boost",
+      "accuracy": 0.9786666666666667,
+      "f1": 0.9787234042553191,
+      "roc_auc": 0.9952497439981796
+    }
+  ]
+}

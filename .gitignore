@@ -1,0 +1,45 @@
+# Python
+__pycache__/
+*.py[cod]
+*.so
+.venv/
+venv/
+.env
+
+# Generated data (large; reproduced by generate_data.py)
+data/raw/
+data/processed/
+data/cache/
+*.csv
+*.parquet
+*.h5
+*.pkl
+*.npy
+*.npz
+
+# Models / artifacts
+models/
+*.pt
+*.pth
+*.onnx
+*.joblib
+mlruns/
+wandb/
+checkpoints/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# IDE / OS
+.vscode/
+.idea/
+*.swp
+.DS_Store
+
+# Journals (per ~/.claude/CLAUDE.md — never commit raw command output)
+journal-*.md
+
+# Secrets
+.env.local
+*.key
+secrets.json
