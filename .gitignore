@@ -7,15 +7,19 @@ venv/
 .env
 
 # Generated data (large; reproduced by generate_data.py)
-data/raw/
-data/processed/
-data/cache/
+data/
 *.csv
 *.parquet
 *.h5
 *.pkl
 *.npy
 *.npz
+
+# But DO commit dashboard figures and final metrics — they're the showcase.
+!assets/
+!assets/*.png
+!results/
+!results/metrics.json
 
 # Models / artifacts
 models/
