@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ML 02 · Classification &amp; Decision Trees — Dashboard</title>
+<style>
+  :root{
+    --navy:#0E2841; --navy2:#14385B; --navy3:#1C4A75;
+    --orange:#ED7D31; --orange2:#F4A26B;
+    --blue:#9DC3E6; --bg:#EEF1F4; --card:#FFFFFF;
+    --text:#1A2733; --muted:#6B7B8C; --line:#E2E7EC;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%}
+  body{font-family:"Segoe UI",-apple-system,BlinkMacSystemFont,Roboto,Helvetica,Arial,sans-serif;
+       background:var(--bg);color:var(--text);display:flex;min-height:100vh}
+  /* ---- sidebar ---- */
+  .sidebar{width:210px;flex-shrink:0;background:var(--navy);color:#fff;
+           display:flex;flex-direction:column;position:sticky;top:0;height:100vh}
+  .brand{padding:22px 20px 18px 20px;border-bottom:1px solid rgba(255,255,255,.08)}
+  .brand .n{font-size:12px;letter-spacing:2px;color:var(--orange);font-weight:700}
+  .brand .t{font-size:17px;font-weight:700;margin-top:4px;line-height:1.25}
+  nav{padding:10px 0;flex:1}
+  nav a{display:flex;align-items:center;gap:10px;padding:13px 20px;color:#C5D2DE;
+        cursor:pointer;font-size:14px;font-weight:600;border-left:3px solid transparent;
+        user-select:none;transition:background .12s}
+  nav a:hover{background:rgba(255,255,255,.05);color:#fff}
+  nav a.active{background:var(--orange);color:#fff;border-left-color:#fff}
+  nav a .ic{font-size:16px;width:18px;text-align:center}
+  .side-foot{padding:16px 20px;font-size:11px;color:#7E93A8;border-top:1px solid rgba(255,255,255,.08)}
+  .side-foot a{color:var(--blue);text-decoration:none}
+  /* ---- main ---- */
+  .main{flex:1;padding:26px 30px 50px 30px;max-width:1180px}
+  .topbar{display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:12px;
+          border-bottom:2px solid var(--line);padding-bottom:16px;margin-bottom:22px}
+  .topbar h1{font-size:25px;font-weight:800;color:var(--navy)}
+  .topbar .sub{font-size:13px;color:var(--muted);margin-top:4px}
+  .topbar .meta{font-size:12px;color:var(--muted);text-align:right;line-height:1.7}
+  .topbar .meta b{color:var(--navy)}
+  /* ---- panels ---- */
+  .panel{display:none;animation:fade .2s ease}
+  .panel.active{display:block}
+  @keyframes fade{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+  .panel h2{font-size:13px;text-transform:uppercase;letter-spacing:1px;color:var(--muted);
+            margin:26px 0 12px 0;font-weight:700}
+  .panel h2:first-child{margin-top:0}
+  /* ---- KPI cards ---- */
+  .kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+  .kpi{border-radius:8px;padding:18px 16px;text-align:center;color:#fff;
+       box-shadow:0 1px 3px rgba(14,40,65,.12)}
+  .kpi .v{font-size:30px;font-weight:800;line-height:1}
+  .kpi .l{font-size:12.5px;font-weight:600;margin-top:8px;opacity:.92}
+  .kpi .s{font-size:11px;margin-top:5px;opacity:.8}
+  .kpi.navy{background:var(--navy)} .kpi.orange{background:var(--orange)}
+  .kpi.blue{background:var(--blue);color:var(--navy)}
+  /* ---- cards ---- */
+  .card{background:var(--card);border:1px solid var(--line);border-radius:8px;padding:16px 18px;
+        margin-top:14px;box-shadow:0 1px 2px rgba(14,40,65,.05)}
+  .card h3{font-size:15px;color:var(--navy);font-weight:700}
+  .card .cap{font-size:12.5px;color:var(--muted);margin:4px 0 10px 0}
+  .card img{width:100%;border:1px solid var(--line);border-radius:5px;margin-top:6px}
+  /* ---- table ---- */
+  table{width:100%;border-collapse:collapse;font-size:13.5px;margin-top:6px}
+  th,td{padding:9px 10px;text-align:center;border-bottom:1px solid var(--line)}
+  th{background:var(--navy);color:#fff;font-weight:600;font-size:12.5px}
+  th:first-child,td:first-child{text-align:left}
+  tbody tr:nth-child(even){background:#F6F8FA}
+  .pill{display:inline-block;padding:3px 9px;border-radius:11px;font-weight:700;font-size:12.5px;color:#fff}
+  .p-navy{background:var(--navy)} .p-orange{background:var(--orange)}
+  .p-blue{background:var(--blue);color:var(--navy)} .p-gray{background:#9AA8B5}
+  .legend{font-size:12px;color:var(--muted);margin-top:9px}
+  .note{background:#FBF3EC;border-left:3px solid var(--orange);padding:11px 14px;border-radius:0 6px 6px 0;
+        font-size:13.5px;line-height:1.6;margin-top:14px}
+  pre{background:var(--navy);color:#E7EEF5;padding:14px 16px;border-radius:7px;overflow:auto;
+      font-size:12.5px;line-height:1.6;margin-top:10px;font-family:"SF Mono",Consolas,monospace}
+  pre .c{color:#7E9CB8}
+  code{background:#E7ECF1;padding:1px 5px;border-radius:3px;font-size:12.5px;
+       font-family:"SF Mono",Consolas,monospace}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  @media(max-width:780px){.kpis{grid-template-columns:1fr}.grid2{grid-template-columns:1fr}
+    .sidebar{width:64px}.brand .t,nav a span.tx,.side-foot{display:none}}
+</style>
+</head>
+<body>
+
+<aside class="sidebar">
+  <div class="brand"><div class="n">ML · 02</div><div class="t">Classification &amp; Decision Trees</div></div>
+  <nav>
+    <a data-p="overview" class="active"><span class="ic">▣</span><span class="tx">Overview</span></a>
+    <a data-p="charts"><span class="ic">▤</span><span class="tx">Charts</span></a>
+    <a data-p="validation"><span class="ic">✓</span><span class="tx">Validation</span></a>
+    <a data-p="reproduce"><span class="ic">⚙</span><span class="tx">Reproduce</span></a>
+  </nav>
+  <div class="side-foot">Part of a 10-project ML portfolio<br><a href="https://github.com/linnps/ml-02-classification-tree">View on GitHub →</a></div>
+</aside>
+
+<main class="main">
+  <div class="topbar">
+    <div>
+      <h1>Classification &amp; Decision Trees — Why Ensembles Beat a Single Tree</h1>
+      <div class="sub">Logistic · Decision Tree · Random Forest · Gradient Boosting on a synthetic XOR-shape dataset</div>
+    </div>
+    <div class="meta">DATASET: <b>1,500 samples · 4 features (2 informative + 2 noise)</b><br>Synthetic XOR blobs · deterministic (<b>seed 42</b>)<br>75 / 25 train-test split · stratified</div>
+  </div>
+
+  <!-- ===================== OVERVIEW ===================== -->
+  <section class="panel active" id="overview">
+    <div class="kpis">
+      <div class="kpi blue"><div class="v">0.981</div><div class="l">Best Accuracy</div><div class="s">Random Forest (200 trees)</div></div>
+      <div class="kpi navy"><div class="v">0.997</div><div class="l">Best ROC-AUC</div><div class="s">Random Forest (200 trees)</div></div>
+      <div class="kpi orange"><div class="v">0.461</div><div class="l">Logistic Accuracy</div><div class="s">Below chance — XOR is unsolvable linearly</div></div>
+    </div>
+
+    <h2>Model scorecard</h2>
+    <div class="card">
+      <table>
+        <thead><tr><th>Model</th><th>Accuracy</th><th>F1</th><th>ROC-AUC</th></tr></thead>
+        <tbody>
+          <tr><td><b>Logistic Regression</b></td><td><span class="pill p-orange">0.461</span></td><td><span class="pill p-orange">0.468</span></td><td><span class="pill p-orange">0.452</span></td></tr>
+          <tr><td><b>Decision Tree</b> <small>depth 6</small></td><td><span class="pill p-gray">0.869</span></td><td><span class="pill p-gray">0.855</span></td><td><span class="pill p-gray">0.966</span></td></tr>
+          <tr><td><b>Random Forest</b> <small>200 trees</small></td><td><span class="pill p-navy">0.981</span></td><td><span class="pill p-navy">0.981</span></td><td><span class="pill p-navy">0.997</span></td></tr>
+          <tr><td><b>Gradient Boosting</b> <small>200 stages</small></td><td><span class="pill p-gray">0.979</span></td><td><span class="pill p-gray">0.979</span></td><td><span class="pill p-gray">0.995</span></td></tr>
+        </tbody>
+      </table>
+      <div class="legend">● navy = best in column &nbsp; ● orange = notably worst (Logistic — below chance on XOR) &nbsp; ● gray = neutral &nbsp;·&nbsp; values from <code>results/metrics.json</code></div>
+    </div>
+
+    <div class="note"><b>Headline finding:</b> Logistic regression is <i>worse than chance</i> — that's not bad luck, it's a mathematical guarantee. XOR is the canonical example of a problem no linear classifier can solve, and a synthetic dataset lets us demonstrate that cleanly. The ensembles' 98% accuracy is the gap a single decision tree leaves on the table.</div>
+  </section>
+
+  <!-- ===================== CHARTS ===================== -->
+  <section class="panel" id="charts">
+    <h2>Visual diagnostics</h2>
+    <div class="card"><h3>1 · Test-set metrics across models</h3><div class="cap">The bar chart maps the model-complexity ladder almost perfectly: a linear model floors at ~50% (random), a single tree climbs to ~87%, and either ensemble of trees lands at ~98%.</div><img src="assets/01_metrics.png" alt="metrics"></div>
+    <div class="card"><h3>2 · Decision boundaries — the visual proof</h3><div class="cap">Logistic can only draw one straight line (and fails). The Decision Tree draws jagged axis-aligned rectangles. Random Forest and Gradient Boosting arrive at smooth, near-circular boundaries that almost perfectly separate the four XOR blobs.</div><img src="assets/02_decision_boundaries.png" alt="decision boundaries"></div>
+    <div class="grid2">
+      <div class="card"><h3>3 · ROC curves on the test set</h3><div class="cap">Logistic's ROC sits on the diagonal — its score function carries no information. Random Forest (AUC 0.997) and Gradient Boosting (0.995) nearly touch the top-left corner.</div><img src="assets/03_roc.png" alt="ROC curves"></div>
+      <div class="card"><h3>4 · Confusion matrices</h3><div class="cap">Logistic's matrix is balanced-but-wrong. The other three drain the off-diagonals to nearly zero — the signature of a working classifier.</div><img src="assets/04_confusion.png" alt="confusion matrices"></div>
+    </div>
+    <div class="card"><h3>5 · Feature importance — the noise rejection check</h3><div class="cap">Synthetic data ships with two pure-noise features (x3_noise, x4_noise). All three tree-based models assign them near-zero importance, confirming they learn to ignore irrelevant features.</div><img src="assets/05_feature_importance.png" alt="feature importance"></div>
+  </section>
+
+  <!-- ===================== VALIDATION ===================== -->
+  <section class="panel" id="validation">
+    <h2>Metric definitions</h2>
+    <div class="card">
+      <h3>All metrics computed on the 375-row held-out test set</h3>
+      <div class="cap">375 test rows the models never saw during fitting; class balance is 50/50 (stratified split), so random chance is ~0.50.</div>
+      <table>
+        <thead><tr><th>Metric</th><th>Definition</th><th>How to read it for this problem</th></tr></thead>
+        <tbody>
+          <tr><td><b>Accuracy</b></td><td>correct predictions / n</td><td>Fraction of test points classified correctly. With 50/50 balance, random chance is ~0.50. Logistic at 0.461 is <i>below</i> chance — mathematical impossibility, not noise.</td></tr>
+          <tr><td><b>F1 (binary)</b></td><td>2·precision·recall / (precision+recall)</td><td>Harmonic mean of precision and recall. With balanced classes, F1 closely tracks accuracy; diverges when a model systematically over-predicts one class.</td></tr>
+          <tr><td><b>ROC-AUC</b></td><td>area under the ROC curve</td><td>Score of 0.5 means the model's probability score carries no information. Logistic at 0.452 confirms its scores are useless. AUC near 1.0 for ensembles means their predict_proba almost perfectly ranks class 1 above class 0.</td></tr>
+          <tr><td><b>Confusion matrix</b></td><td>TN/FP/FN/TP cell counts</td><td>Visualized as figure 4. A working classifier drains off-diagonals toward zero. Logistic shows near-uniform off-diagonals.</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h2>Full results</h2>
+    <div class="card">
+      <table>
+        <thead><tr><th>Model</th><th>Test Accuracy</th><th>Test F1</th><th>Test ROC-AUC</th></tr></thead>
+        <tbody>
+          <tr><td>Logistic Reg.</td><td>0.4613</td><td>0.4684</td><td>0.4524</td></tr>
+          <tr><td>Decision Tree (depth 6)</td><td>0.8693</td><td>0.8546</td><td>0.9661</td></tr>
+          <tr><td><b>Random Forest (200 trees)</b></td><td><b>0.9813</b></td><td><b>0.9813</b></td><td><b>0.9968</b></td></tr>
+          <tr><td>Gradient Boost (200 stages)</td><td>0.9787</td><td>0.9787</td><td>0.9952</td></tr>
+        </tbody>
+      </table>
+      <div class="legend">Determinism: a single <code>seed = 42</code> drives blob sampling, noise draw, shuffling, and the train/test split. All four model constructors also receive <code>random_state=42</code>. The qualitative ranking (Logistic fails → single tree ~87% → ensembles ~98%) is robust across seeds; third-decimal values are seed-dependent.</div>
+    </div>
+  </section>
+
+  <!-- ===================== REPRODUCE ===================== -->
+  <section class="panel" id="reproduce">
+    <h2>Run it yourself</h2>
+    <div class="card">
+      <pre><span class="c"># 1. environment</span>
+python3 -m venv .venv &amp;&amp; source .venv/bin/activate
+pip install -r requirements.txt
+
+<span class="c"># 2. generate the synthetic XOR-shape dataset (deterministic)</span>
+python generate_data.py
+
+<span class="c"># 3. fit, evaluate, render dashboard figures</span>
+python train.py</pre>
+      <div class="cap" style="margin-top:10px">Produces the five PNGs in <code>assets/</code> and the metric summary in <code>results/metrics.json</code>.</div>
+    </div>
+    <h2>Tweak the difficulty</h2>
+    <div class="card">
+      <pre>DataConfig(
+    n_samples=1500,
+    cluster_std=0.55,         <span class="c"># blob spread — higher = more class overlap</span>
+    n_noise_features=2,       <span class="c"># how many distractor features to add</span>
+    seed=42,
+)</pre>
+      <div class="cap" style="margin-top:10px">Try <code>cluster_std=0.9</code> to see all models degrade gracefully, or <code>n_noise_features=10</code> to watch the single decision tree start to choke even at depth 6.</div>
+    </div>
+  </section>
+</main>
+
+<script>
+  document.querySelectorAll('.sidebar nav a').forEach(function(a){
+    a.addEventListener('click',function(){
+      document.querySelectorAll('.sidebar nav a').forEach(function(x){x.classList.remove('active')});
+      document.querySelectorAll('.panel').forEach(function(p){p.classList.remove('active')});
+      a.classList.add('active');
+      document.getElementById(a.dataset.p).classList.add('active');
+      window.scrollTo({top:0,behavior:'smooth'});
+    });
+  });
+</script>
+</body>
+</html>
