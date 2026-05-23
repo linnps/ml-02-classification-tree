@@ -17,37 +17,12 @@
 
 > Train four classifiers on a synthetic dataset whose **decision boundary is XOR-shaped** (linear models cannot solve it by construction) and watch the model-family ladder reveal itself: linear fails → single tree mostly works → ensembles nail it.
 
-<table>
-<tr>
-<td align="center" width="25%">
-<sub>Logistic Regression</sub><br>
-<b style="font-size:1.5em; color:#C04040;">46.1%</b><br>
-<sub>accuracy — fails by construction</sub>
-</td>
-<td align="center" width="25%">
-<sub>Decision Tree (depth 6)</sub><br>
-<b style="font-size:1.5em; color:#7A7A7A;">86.9%</b><br>
-<sub>works, but jagged</sub>
-</td>
-<td align="center" width="25%">
-<sub>Random Forest</sub><br>
-<b style="font-size:1.5em; color:#3B6EA8;">98.1%</b><br>
-<sub>clean XOR recovery</sub>
-</td>
-<td align="center" width="25%">
-<sub>Gradient Boosting</sub><br>
-<b style="font-size:1.5em; color:#3B6EA8;">97.9%</b><br>
-<sub>matches RF</sub>
-</td>
-</tr>
-</table>
-
-| Model | Accuracy | F1 | ROC-AUC |
-|---|---:|---:|---:|
-| Logistic Regression | 0.461 | 0.468 | 0.452 |
-| Decision Tree (depth 6) | 0.869 | 0.855 | 0.966 |
-| **Random Forest (200 trees)** | **0.981** | **0.981** | **0.997** |
-| **Gradient Boosting (200 stages)** | **0.979** | **0.979** | **0.995** |
+<p align="center">
+  <img src="https://img.shields.io/badge/Best_Accuracy-0.981-3B6EA8?style=for-the-badge" alt="Best Accuracy 0.981">
+  <img src="https://img.shields.io/badge/Best_ROC--AUC-0.997-3B6EA8?style=for-the-badge" alt="Best ROC-AUC 0.997">
+  <img src="https://img.shields.io/badge/Logistic_Accuracy-0.461-C04040?style=for-the-badge" alt="Logistic Accuracy 0.461 — below chance">
+</p>
+<p align="center"><sub>Best Accuracy &amp; ROC-AUC &rarr; <b>Random Forest</b> (200 trees)&nbsp;·&nbsp;Logistic Regression at 0.461 is <b>below chance</b> — a mathematical guarantee on XOR data</sub></p>
 
 <sub>**Headline finding:** Logistic regression is *worse than chance* — that's not bad luck, it's a mathematical guarantee. XOR is the canonical example of a problem no linear classifier can solve, and a synthetic dataset lets us demonstrate that cleanly. The ensembles' 98% is the gap a single decision tree leaves on the table.</sub>
 
@@ -98,6 +73,38 @@ The dataset is fully synthetic, shaped so that the *true* decision boundary is X
 ---
 
 ## Dashboard
+
+### Model scorecard
+
+<table>
+<tr><th align="left">Model</th><th>Accuracy</th><th>F1</th><th>ROC-AUC</th></tr>
+<tr>
+  <td><b>Logistic Regression</b></td>
+  <td align="center"><img src="https://img.shields.io/badge/0.461-C04040?style=flat-square" alt="0.461"></td>
+  <td align="center"><img src="https://img.shields.io/badge/0.468-C04040?style=flat-square" alt="0.468"></td>
+  <td align="center"><img src="https://img.shields.io/badge/0.452-C04040?style=flat-square" alt="0.452"></td>
+</tr>
+<tr>
+  <td><b>Decision Tree</b> <sub>depth 6</sub></td>
+  <td align="center"><img src="https://img.shields.io/badge/0.869-7A7A7A?style=flat-square" alt="0.869"></td>
+  <td align="center"><img src="https://img.shields.io/badge/0.855-7A7A7A?style=flat-square" alt="0.855"></td>
+  <td align="center"><img src="https://img.shields.io/badge/0.966-7A7A7A?style=flat-square" alt="0.966"></td>
+</tr>
+<tr>
+  <td><b>Random Forest</b> <sub>200 trees</sub></td>
+  <td align="center"><img src="https://img.shields.io/badge/0.981-3B6EA8?style=flat-square" alt="0.981 best"></td>
+  <td align="center"><img src="https://img.shields.io/badge/0.981-3B6EA8?style=flat-square" alt="0.981 best"></td>
+  <td align="center"><img src="https://img.shields.io/badge/0.997-3B6EA8?style=flat-square" alt="0.997 best"></td>
+</tr>
+<tr>
+  <td><b>Gradient Boosting</b> <sub>200 stages</sub></td>
+  <td align="center"><img src="https://img.shields.io/badge/0.979-7A7A7A?style=flat-square" alt="0.979"></td>
+  <td align="center"><img src="https://img.shields.io/badge/0.979-7A7A7A?style=flat-square" alt="0.979"></td>
+  <td align="center"><img src="https://img.shields.io/badge/0.995-7A7A7A?style=flat-square" alt="0.995"></td>
+</tr>
+</table>
+
+<sub>blue = best in column · red = notably worst (Logistic Regression, below-chance on XOR) · values from `results/metrics.json`.</sub>
 
 ### 1. Test-set metrics across models
 
