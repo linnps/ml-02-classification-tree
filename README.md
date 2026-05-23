@@ -13,6 +13,10 @@
 
 ---
 
+<p align="center">
+  <a href="https://linnps.github.io/ml-02-classification-tree/"><img src="https://img.shields.io/badge/View_Live_Dashboard-0E2841?style=for-the-badge&amp;logo=githubpages&amp;logoColor=white" alt="View live dashboard"></a>
+</p>
+
 ## At a glance
 
 > Train four classifiers on a synthetic dataset whose **decision boundary is XOR-shaped** (linear models cannot solve it by construction) and watch the model-family ladder reveal itself: linear fails → single tree mostly works → ensembles nail it.
